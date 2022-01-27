@@ -1,4 +1,5 @@
 import Router from "./Router";
+import { ReactQueryDevtools } from "react-query/devtools";
 import { Reset } from 'styled-reset';
 import React from "react";
 import { createGlobalStyle } from "styled-components";
@@ -29,6 +30,8 @@ function App() {
       <Reset />
       <GlobalStyle />
       <Router />
+      {/* DevTools : Reqct Query의  */}
+      <ReactQueryDevtools initialIsOpen={true} />
     </React.Fragment>
   );
 }

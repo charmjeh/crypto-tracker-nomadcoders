@@ -1,6 +1,12 @@
-import { useState, useEffect } from "react";
+// import { useState, useEffect } from "react";
+
+// React Query는 데이터를 캐시에 저장해두기떄문에,
+// 한번 fetch 후 다시 같은 코인 리스트 페이지에 접근 시 Loading 화면이 보이지 않음
+import { useQuery } from "react-query";
+
 import { Link } from "react-router-dom";
 import styled from 'styled-components';
+import { fetchCoins } from "../api";
 
 const Container = styled.div`
   padding: 0px 20px;
@@ -50,39 +56,40 @@ const Img = styled.img`
   margin-right: 10px;
 `
 
-interface CoinInterface {
+interface ICoin {
   id: string;
   name: string;
   symbol: string;
-  rank: number;
-  is_new: boolean;
-  is_active: boolean;
-  type: string;
 }
 
 function Coins() {
-  // 우리의 useState는 CoinInterface 모양일 것이다
-  const [coins, setCoins] = useState<CoinInterface[]>([]);
-  const [loading, setLoading] = useState(true);
+  // useQuery(<Query Key : 고유 식별자>, <fetcher function>)
+  const { isLoading, data } = useQuery<ICoin[]>("allCoins", fetchCoins);
 
-  useEffect(() => {
-    (async () => {
-      const reaponse = await fetch("https://api.coinpaprika.com/v1/tickers");
-      const json = await reaponse.json();
-      setCoins(json.slice(0, 100));
-      setLoading(false);
-    })();
-  }, [])
+
+  // 우리의 useState는 CoinInterface 모양일 것이다
+  // const [coins, setCoins] = useState<CoinInterface[]>([]);
+  // const [loading, setLoading] = useState(true);
+
+  // useEffect(() => {
+  //   (async () => {
+  //     const reaponse = await fetch("https://api.coinpaprika.com/v1/tickers");
+  //     const json = await reaponse.json();
+  //     setCoins(json.slice(0, 100));
+  //     setLoading(false);
+  //   })();
+  // }, [])
+
   return (
     <Container>
       <Header>
         <Title>코인</Title>
       </Header>
-      {loading ? (
+      {isLoading ? (
         <Loader>Loading...</Loader>
       ) : (
         <CoinsList>
-          {coins.map((coin: CoinInterface) => (
+          {data?.slice(0, 100).map((coin) => (
             <Coin key={coin.id}>
               <Link
                 to={{
